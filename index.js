@@ -68,3 +68,39 @@ app.post('/api/books', (req, res) => {
   books.push(newBook);
   res.status(201).json(newBook);
 });
+
+
+app.put('/api/books/:id', (req, res) => {
+
+  const book = books.find(book => book.id === parseInt(req.params.id));
+
+  if(!book) {
+    return res.status(404).json({ code: 'not_found' });
+  }
+
+  const { title, author, genre, year, available } = req.body;
+
+  let newBook = book;
+
+  if(title) newBook.title = title;
+  if(author) newBook.author = author;
+  if(genre) newBook.genre = genre;
+  if(year) newBook.year = year;
+  if(available !== undefined) newBook.available = available;
+
+  res.json(newBook);
+
+});
+
+app.delete('/api/books/:id', (req, res) => {
+
+  const bookIndex = books.findIndex(book => book.id === parseInt(req.params.id));
+
+  if(bookIndex === -1) {
+    return res.status(404).json({ code: 'not_found' });
+  }
+
+  books.splice(bookIndex, 1);
+  res.status(200).json({ message: 'Book deleted successfully' });
+
+});
