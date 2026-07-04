@@ -1,4 +1,5 @@
 const express = require('express');
+const Joi = require('joi');
  
 const app = express();
 const PORT = 8000;
@@ -38,4 +39,32 @@ app.get('/api/books', (req, res) => {
   }
 
   res.json(filteredBooks);
+});
+
+app.post('/api/books', (req, res) => {
+  const { title, author, genre, year } = req.body;
+
+  const schema = Joi.object({
+    title: Joi.string().required(),
+    author: Joi.string().required(),
+    genre: Joi.string().required(),
+    year: Joi.number().integer().required()
+  });
+
+  const { error } = schema.validate({ title, author, genre, year });
+
+  if(error) {
+    return res.status(400).json({ code: 'bad_request', message: 'validation error' });
+  }
+
+  const newBook = {
+    id: books.length + 1,
+    title,
+    author,
+    genre,
+    year
+  };
+
+  books.push(newBook);
+  res.status(201).json(newBook);
 });
